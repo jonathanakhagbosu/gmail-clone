@@ -19,6 +19,8 @@ import React from "react";
 import "./SendMail.css";
 import { useDispatch } from "react-redux";
 import { closeSendMessage } from "../../app/features/mailSlice";
+import { db } from "../../firebase/firebase";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 
 const SendMail = () => {
   const {
@@ -28,8 +30,17 @@ const SendMail = () => {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const onSubmit = (formData) => {
+    console.log(formData);
+
+    addDoc(collection(db, "emails"), {
+      recipient: formData.recipient,
+      subject: formData.subject,
+      message: formData.message,
+      timestamp: serverTimestamp(),
+    });
+
+    dispatch(closeSendMessage());
   };
 
   const dispatch = useDispatch();
@@ -57,7 +68,6 @@ const SendMail = () => {
         <input
           type="text"
           name="recipient"
-          id=""
           placeholder="Recipients"
           {...register("recipient", {
             required: true,
@@ -74,7 +84,6 @@ const SendMail = () => {
         <input
           type="text"
           name="subject"
-          id=""
           placeholder="Subject"
           {...register("subject", { required: true })}
         />

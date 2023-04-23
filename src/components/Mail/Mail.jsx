@@ -19,9 +19,12 @@ import { Button, IconButton } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./Mail.css";
+import { useSelector } from "react-redux";
+import { selectOpenMail } from "../../app/features/mailSlice";
 
 const Mail = () => {
   const navigate = useNavigate();
+  const selectedMail = useSelector(selectOpenMail);
 
   return (
     <div className="mail">
@@ -67,7 +70,7 @@ const Mail = () => {
         <div className="mailBody__header">
           <div className="mailBody__headerTop">
             <div className="mailBody__headerTopLeft">
-              <h2>Subject</h2>
+              <h2>{selectedMail?.subject}</h2>
             </div>
             <div className="mailBody__headerTopRight">
               <IconButton>
@@ -85,12 +88,11 @@ const Mail = () => {
                 <AccountCircleOutlined fontSize="large" />
               </IconButton>
               <h5>
-                Jonathan Akhagbosu{" "}
-                <span className="user__email">jonathanakhagbosu@gmail.com</span>
+                <span className="user__email">{selectedMail?.sender}</span>
               </h5>
             </div>
             <div className="mailBody__headerBottomRight">
-              <small>02:00PM</small>
+              <small>{selectedMail?.time}</small>
               <IconButton>
                 <StarBorderOutlined />
               </IconButton>
@@ -106,7 +108,7 @@ const Mail = () => {
 
         <div className="mailBody__messageWrapper">
           <div className="mailBody__message">
-            <p>Here! I've got some funds for you.</p>
+            <p>{selectedMail?.description}</p>
           </div>
         </div>
 

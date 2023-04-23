@@ -9,12 +9,25 @@ import {
   RefreshOutlined,
 } from "@mui/icons-material";
 import { Checkbox, IconButton } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./EmailList.css";
 import EmailRow from "./EmailRow";
 import Section from "./Section";
+import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import { db } from "../../firebase/firebase";
 
 const EmailList = () => {
+  const [emails, setEmails] = useState([]);
+
+  useEffect(() => {
+    const q = query(collection(db, "emails"), orderBy("timestamp", "desc"));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const updatedMails = querySnapshot.docs.map((doc) => doc.data());
+      setEmails(updatedMails);
+    });
+    return unsubscribe;
+  }, []);
+
   return (
     <div className="emailList">
       <div className="emailList__settings">
@@ -52,18 +65,15 @@ const EmailList = () => {
       </div>
 
       <div className="emailList__list">
-        <EmailRow
-          sender="Jonathan Akhagbosu"
-          subject="Credit Alert"
-          description="Here, I've got some funds for you"
-          time="10:30PM"
-        />
-        <EmailRow
-          sender="Jonathan Akhagbosu"
-          subject="Credit Alert"
-          description="Here, I've got some funds for you Here, I've got some funds for youHere, I've got some funds for youHere, I've got some funds for you"
-          time="10:30PM"
-        />
+        {emails.map((email, index) => (
+          <EmailRow
+            key={index}
+            sender={email.recipient}
+            subject={email.subject}
+            description={email.message}
+            time={email.timestamp && email.timestamp.toDate().toLocaleString()}
+          />
+        ))}
       </div>
     </div>
   );
